@@ -1,5 +1,4 @@
 from django.shortcuts import render, redirect
-from .credentials import CLIENT_ID, CLIENT_SECRET, REDIRECT_URI
 from rest_framework.views import APIView
 from requests import Request, post
 from rest_framework.response import Response
@@ -7,16 +6,19 @@ from rest_framework import status
 from .util import *
 from api.models import Room
 from .models import Vote
+from dotenv import load_dotenv
+import os
 
 
+load_dotenv()
 # Create your views here.   
 class AuthURL(APIView):
     def get(self, request, format=None):
         scopes = "user-read-playback-state user-modify-playback-state user-read-currently-playing"
         url = Request("GET", "https://accounts.spotify.com/authorize", params={
-            "client_id": CLIENT_ID,
+            "client_id": os.environ.get("CLIENT_ID"),
             "response_type": "code",
-            "redirect_uri": REDIRECT_URI,
+            "redirect_uri": os.environ.get("REDIRECT_URI"),
             "scope": scopes
         }).prepare().url
 
@@ -29,9 +31,9 @@ def spotify_callback(request, format=None):
     response = post("https://accounts.spotify.com/api/token", data={
         "grant_type": "authorization_code",
         "code": code,
-        "redirect_uri": REDIRECT_URI,
-        "client_id": CLIENT_ID,
-        "client_secret": CLIENT_SECRET
+        "redirect_uri": os.environ.get("REDIRECT_URI"),
+        "client_id": os.environ.get("CLIENT_ID"),
+        "client_secret": os.environ.get("CLIENT_SECRET")
     }).json()
     access_token = response.get('access_token')
     token_type = response.get('token_type')

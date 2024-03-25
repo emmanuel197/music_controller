@@ -136,7 +136,7 @@ export default class Room extends Component {
                             Code: {this.roomCode}
                         </Typography>
                     </Grid>
-                    <Grid item align="center">
+                    <Grid item style={{margin: "auto"}}>
                         <MusicPlayer {...this.state.song}/>
                     </Grid>
                     {this.state.isHost && this.renderSettingsButton()}
